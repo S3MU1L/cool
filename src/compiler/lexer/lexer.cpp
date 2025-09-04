@@ -1,13 +1,17 @@
-
 #include "lexer.hpp";
 
-namespace cool::compiler::lexer
+namespace cool::compiler::lexer {
+
+Token Lexer::get_token() {}
+
+char Lexer::peek()
 {
-
-	Token Lexer::get_token() { }
-
-	char Lexer::peek() { return content.at( current ); }
-
-	bool Lexer::is_end() { return current == content.size(); }
-	
+    return content.at(current);
 }
+
+bool Lexer::is_end()
+{
+    return current == content.size();
+}
+
+} // namespace cool::compiler::lexer
