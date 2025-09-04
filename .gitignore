@@ -1,0 +1,33 @@
+# Compiled object files
+*.o
+*.obj
+
+# Compiled static libraries
+*.a
+*.lib
+
+# Compiled dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Executable files
+*.exe
+*.out
+*.app
+
+# Debug files
+*.dSYM/
+*.pdb
+
+# IDE/editor files
+.vscode/
+.idea/
+*.swp
+*~
+
+# Build directories
+build/
+bin/
+debug/
+release/
