@@ -1,9 +1,10 @@
-add_executable(cool main.cpp)
+add_executable(cool main.cpp
+)
 
 target_include_directories(
-	cool
-	PRIVATE
-	bytecode
-	interpreter
-	runtime
+        cool
+        PRIVATE
+        bytecode
+        interpreter
+        runtime
 )

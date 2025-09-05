@@ -1,10 +1,6 @@
-add_executable(coolc main.cpp)
-
-target_include_directories(
-	coolc
-	PRIVATE
-	codegen
-	ir
-	lexer
-	parser
+add_executable(coolc main.cpp
+        lexer/lexer.hpp
+        compiler.cpp
+        compilation_result.hpp
+        lexer/lexer.cpp
 )
