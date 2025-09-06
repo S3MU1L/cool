@@ -34,7 +34,7 @@ std::string Compiler::read_file(const std::ifstream &file)
     return content;
 }
 
-CompilationResult Compiler::compile()
+CompilationResult Compiler::compile() const
 {
     if (!check_file(file_name))
     {

@@ -17,6 +17,6 @@ struct Compiler
     static void        error(int line, const std::string &message);
     static void        error(const lexer::Token &token, const std::string &message);
     static std::string read_file(const std::ifstream &file);
-    CompilationResult  compile();
+    CompilationResult  compile() const;
 };
 } // namespace cool::compiler

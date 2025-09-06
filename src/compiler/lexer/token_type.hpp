@@ -5,6 +5,7 @@ enum TokenType {
     // Single-character tokens
     DOT,
     COMMA,
+    COLON,
     MINUS,
     PLUS,
     BANG,
@@ -46,6 +47,14 @@ enum TokenType {
     RETURN,
     CLASS,
 
+    // Types
+    INT,
+    STRING_TYPE,
+    BOOL,
+    VOID,
+    NULL_TYPE,
+
+    // End of file
     END_OF_FILE
 };
 }

@@ -22,11 +22,13 @@ void Lexer::scan_tokens()
 
 void Lexer::scan_token()
 {
-    const char c = advance();
-    switch (c)
+    switch (const char c = advance())
     {
     case '.':
         add_token(DOT, {});
+        break;
+    case ':':
+        add_token(COLON, {});
         break;
     case ',':
         add_token(COMMA, {});
@@ -185,9 +187,14 @@ bool Lexer::isdigit(char c)
 std::optional<TokenType> Lexer::get_token_type_for_keyword(const std::string &word)
 {
     static const std::unordered_map<std::string, TokenType> keyword_map = {
-            {"class", CLASS}, {"var", VAR},     {"val", VAL},     {"print", PRINT},
-            {"fn", FN},       {"true", TRUE},   {"false", FALSE}, {"if", IF},
-            {"else", ELSE},   {"while", WHILE}, {"for", FOR},     {"return", RETURN}};
+            {"class", CLASS}, {"var", VAR},
+            {"val", VAL},     {"print", PRINT},
+            {"fn", FN},       {"true", TRUE},
+            {"false", FALSE}, {"if", IF},
+            {"else", ELSE},   {"while", WHILE},
+            {"for", FOR},     {"return", RETURN},
+            {"int", INT},     {"string", STRING_TYPE},
+            {"bool", BOOL},   {"void", VOID}};
 
     if (const auto it = keyword_map.find(word); it != keyword_map.end())
         return it->second;
