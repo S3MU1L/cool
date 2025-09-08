@@ -130,7 +130,9 @@ std::unique_ptr<ast::Stmt> Parser::statement()
 
 std::unique_ptr<ast::Stmt> Parser::print_statement()
 {
+    consume(lexer::LPAREN, "Expected '(' after 'print'.");
     std::unique_ptr<ast::Expr> expr = expression();
+    consume(lexer::RPAREN, "Expected ')' after value.");
     consume(lexer::SEMICOLON, "Expected ';' after value.");
     return std::make_unique<ast::Print>(std::move(expr));
 }
@@ -144,9 +146,9 @@ std::unique_ptr<ast::Stmt> Parser::expr_statement()
 
 std::unique_ptr<ast::Stmt> Parser::if_statement()
 {
-    consume(lexer::LBRACE, "Expected '{' after 'if'.");
+    consume(lexer::LPAREN, "Expected '(' after 'if'.");
     std::unique_ptr<ast::Expr> condition = expression();
-    consume(lexer::RBRACE, "Expected '}' after if condition.");
+    consume(lexer::RPAREN, "Expected ')' after if condition.");
     std::unique_ptr<ast::Stmt> then_branch = statement();
     std::unique_ptr<ast::Stmt> else_branch;
     if (match({lexer::ELSE}))
@@ -159,16 +161,17 @@ std::unique_ptr<ast::Stmt> Parser::if_statement()
 
 std::unique_ptr<ast::Stmt> Parser::while_statement()
 {
-    consume(lexer::LBRACE, "Expected) '{' after 'while'.");
+    consume(lexer::LPAREN, "Expected '(' after 'while'.");
     std::unique_ptr<ast::Expr> condition = expression();
-    consume(lexer::RBRACE, "Expected '}' after while condition.");
+    consume(lexer::RPAREN, "Expected ')' after while condition.");
     std::unique_ptr<ast::Stmt> body = statement();
     return std::make_unique<ast::While>(std::move(condition), std::move(body));
 }
 
 std::unique_ptr<ast::Stmt> Parser::for_statement()
 {
-    consume(lexer::LBRACE, "Expected '{' after 'for'.");
+    consume(lexer::LPAREN, "Expected '(' after 'for'.");
+
     std::unique_ptr<ast::Stmt> initializer;
     if (match({lexer::SEMICOLON}))
         initializer = nullptr;
@@ -180,13 +183,13 @@ std::unique_ptr<ast::Stmt> Parser::for_statement()
     std::unique_ptr<ast::Expr> condition;
     if (!check(lexer::SEMICOLON))
         condition = expression();
-
     consume(lexer::SEMICOLON, "Expected ';' after loop condition.");
+
     std::unique_ptr<ast::Expr> increment;
-    if (!check(lexer::RBRACE))
+    if (!check(lexer::RPAREN))
         increment = expression();
 
-    consume(lexer::RBRACE, "Expected '}' after for clauses.");
+    consume(lexer::RPAREN, "Expected ')' after for clauses.");
     std::unique_ptr<ast::Stmt> body = statement();
     if (increment)
     {
@@ -379,7 +382,6 @@ std::unique_ptr<ast::Expr> Parser::call()
 std::unique_ptr<ast::Expr> Parser::primary()
 {
     // Debug output: print current token type and value
-    std::cout << "[primary] Token: " << peek().type << " Value: " << peek().lexeme << std::endl;
     if (match({lexer::TRUE}))
         return std::make_unique<ast::Literal>(true);
     if (match({lexer::FALSE}))
