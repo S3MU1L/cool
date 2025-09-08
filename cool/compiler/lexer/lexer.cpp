@@ -145,8 +145,8 @@ void Lexer::string()
         Compiler::error(line, "Unterminated string");
         return;
     }
-    advance(); // move past the closing "
     const std::string value = content.substr(start + 1, current - start - 1);
+    advance();
     add_token(STRING, value);
 }
 
