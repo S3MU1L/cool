@@ -142,7 +142,23 @@ void AstPrinter::print_expr(const Expr *expr, int indent)
     else if (const auto *lit = dynamic_cast<const Literal *>(expr))
     {
         print_indent(indent);
-        std::cout << "Literal: " << lit << '\n';
+        std::cout << "Literal: ";
+        std::visit(
+                [](auto &&arg) {
+                    using T = std::decay_t<decltype(arg)>;
+                    if constexpr (std::is_same_v<T, std::monostate>)
+                        std::cout << "null";
+                    else if constexpr (std::is_same_v<T, std::string>)
+                        std::cout << '"' << arg << '"';
+                    else if constexpr (std::is_same_v<T, bool>)
+                        std::cout << (arg ? "true" : "false");
+                    else if constexpr (std::is_same_v<T, double>)
+                        std::cout << arg;
+                    else
+                        std::cout << "unknown literal type";
+                },
+                lit->value);
+        std::cout << '\n';
     }
     else if (const auto *g = dynamic_cast<const Grouping *>(expr))
     {
