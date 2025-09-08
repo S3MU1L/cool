@@ -34,19 +34,25 @@ void Lexer::scan_token()
         add_token(COMMA, {});
         break;
     case '-':
-        add_token(MINUS, {});
+        add_token(match('>') ? ARROW : MINUS, {});
         break;
     case '+':
         add_token(PLUS, {});
         break;
     case '!':
-        add_token(match('=') ? BANG_EQUALS : BANG, {});
+        add_token(match('=') ? BANG_EQUAL : BANG, {});
         break;
     case '=':
-        add_token(match('=') ? EQUALS_EQUALS : EQUALS, {});
+        add_token(match('=') ? EQUALS_EQUAL : EQUAL, {});
         break;
     case '/':
         add_token(SLASH, {});
+        break;
+    case '&':
+        add_token(match('&') ? AND : AMPERSAND, {});
+        break;
+    case '|':
+        add_token(match('|') ? OR : PIPE, {});
         break;
     case '*':
         add_token(STAR, {});
@@ -67,7 +73,7 @@ void Lexer::scan_token()
         add_token(RBRACE, {});
         break;
     case ';':
-        add_token(SEMICOLUMN, {});
+        add_token(SEMICOLON, {});
         break;
     case '<':
         add_token(match('=') ? LESS_EQUAL : LESS, {});
@@ -187,14 +193,15 @@ bool Lexer::isdigit(char c)
 std::optional<TokenType> Lexer::get_token_type_for_keyword(const std::string &word)
 {
     static const std::unordered_map<std::string, TokenType> keyword_map = {
-            {"class", CLASS}, {"var", VAR},
-            {"val", VAL},     {"print", PRINT},
-            {"fn", FN},       {"true", TRUE},
-            {"false", FALSE}, {"if", IF},
-            {"else", ELSE},   {"while", WHILE},
-            {"for", FOR},     {"return", RETURN},
-            {"int", INT},     {"string", STRING_TYPE},
-            {"bool", BOOL},   {"void", VOID}};
+            {"class", CLASS},    {"var", VAR},
+            {"val", VAL},        {"print", PRINT},
+            {"fn", FN},          {"true", TRUE},
+            {"false", FALSE},    {"if", IF},
+            {"else", ELSE},      {"while", WHILE},
+            {"for", FOR},        {"return", RETURN},
+            {"int", INT},        {"string", STRING_TYPE},
+            {"bool", BOOL},      {"void", VOID},
+            {"extends", EXTENDS}};
 
     if (const auto it = keyword_map.find(word); it != keyword_map.end())
         return it->second;

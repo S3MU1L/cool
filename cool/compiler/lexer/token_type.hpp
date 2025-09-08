@@ -2,6 +2,7 @@
 
 namespace cool::compiler::lexer {
 enum TokenType {
+
     // Single-character tokens
     DOT,
     COMMA,
@@ -9,7 +10,9 @@ enum TokenType {
     MINUS,
     PLUS,
     BANG,
-    EQUALS,
+    EQUAL,
+    AMPERSAND,
+    PIPE,
     SLASH,
     STAR,
     ASTRIX,
@@ -20,13 +23,16 @@ enum TokenType {
     PERCENT,
     LESS,
     GREATER,
-    SEMICOLUMN,
+    SEMICOLON,
 
     // Two-character tokens
-    BANG_EQUALS,
+    ARROW,
+    AND,
+    OR,
+    BANG_EQUAL,
     LESS_EQUAL,
     GREATER_EQUAL,
-    EQUALS_EQUALS,
+    EQUALS_EQUAL,
 
     // Literals
     NUMBER,
@@ -42,6 +48,7 @@ enum TokenType {
     FOR,
     WHILE,
     IF,
+    EXTENDS,
     ELSE,
     PRINT,
     RETURN,
