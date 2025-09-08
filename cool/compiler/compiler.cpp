@@ -1,6 +1,9 @@
 #include "compiler.hpp"
 
 #include "lexer/lexer.hpp"
+#include "parser/parser.hpp"
+
+#include "ast/ast_printer.hpp"
 
 #include <filesystem>
 #include <fstream>
@@ -60,6 +63,12 @@ CompilationResult Compiler::compile() const
     for (const auto &token : tokens)
         std::cout << token.to_string() << '\n';
 
+    parser::Parser                          parser{tokens};
+    std::vector<std::unique_ptr<ast::Stmt>> statements = parser.parse();
+    if (hasError)
+        return SYNTAX_ERROR;
+
+    ast::AstPrinter::print(statements);
     return SUCCESS;
 }
 
