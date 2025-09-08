@@ -7,4 +7,6 @@ add_executable(coolc main.cpp
         ast/Stmt.hpp
         parser/parser.hpp
         parser/parser.cpp
+        ast/Expr.cpp
+        ast/Stmt.cpp
 )
