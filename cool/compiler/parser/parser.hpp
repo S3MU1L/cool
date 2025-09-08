@@ -12,6 +12,10 @@
 namespace cool::compiler::parser {
 struct Parser
 {
+    // TODO: add a way to extend types in the language
+    std::vector<lexer::TokenType> type_tokens = {lexer::INT, lexer::FLOAT, lexer::STRING_TYPE,
+                                                 lexer::BOOL, lexer::VOID};
+
     std::vector<lexer::Token> tokens;
     int                       current = 0;
 
@@ -50,6 +54,8 @@ struct Parser
     lexer::Token       peek();
     lexer::Token       previous();
     lexer::Token       consume(lexer::TokenType type, const std::string &message);
+    lexer::Token       consume_any(const std::vector<lexer::TokenType> &types,
+                                   const std::string                   &message);
     void               synchronize();
 };
 } // namespace cool::compiler::parser

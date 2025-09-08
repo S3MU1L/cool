@@ -56,6 +56,7 @@ enum TokenType {
 
     // Types
     INT,
+    FLOAT,
     STRING_TYPE,
     BOOL,
     VOID,

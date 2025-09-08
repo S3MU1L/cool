@@ -4,6 +4,7 @@
 #include "parse_error.hpp"
 
 #include <algorithm>
+#include <iostream>
 #include <stdexcept>
 namespace cool::compiler::parser {
 Parser::Parser(std::vector<lexer::Token> tokens) : tokens{std::move(tokens)} {}
@@ -44,7 +45,7 @@ std::unique_ptr<ast::Stmt> Parser::var_declaration()
     // TODO: we don't know if it is var or val
     lexer::Token name = consume(lexer::IDENTIFIER, "Expected variable name.");
     consume(lexer::COLON, "Expected ':' after variable name.");
-    lexer::Token type = consume(lexer::IDENTIFIER, "Expected type after ':'.");
+    lexer::Token type = consume_any(type_tokens, "Expected type after ':'.");
     consume(lexer::EQUAL, "Expected '=' after variable name.");
     std::unique_ptr<ast::Expr> initializer = expression();
     consume(lexer::SEMICOLON, "Expected ';' after variable declaration.");
@@ -97,13 +98,13 @@ std::unique_ptr<ast::Stmt> Parser::function_declaration()
             }
             lexer::Token param_name = consume(lexer::IDENTIFIER, "Expected parameter name.");
             consume(lexer::COLON, "Expected ':' after parameter name.");
-            lexer::Token param_type = consume(lexer::IDENTIFIER, "Expected parameter type.");
+            lexer::Token param_type = consume_any(type_tokens, "Expected parameter type.");
             parameters.emplace_back(param_name, param_type);
         } while (match({lexer::COMMA}));
     }
     consume(lexer::RPAREN, "Expected ')' after parameters.");
     consume(lexer::ARROW, "Expected '->' after parameters.");
-    lexer::Token               return_type = consume(lexer::IDENTIFIER, "Expected return type.");
+    lexer::Token               return_type = consume_any(type_tokens, "Expected return type.");
     std::unique_ptr<ast::Stmt> body        = block();
     return std::make_unique<ast::Function>(name, parameters, return_type, std::move(body));
 }
@@ -111,33 +112,19 @@ std::unique_ptr<ast::Stmt> Parser::function_declaration()
 std::unique_ptr<ast::Stmt> Parser::statement()
 {
     if (match({lexer::FN}))
-    {
         return function_declaration();
-    }
     if (match({lexer::FOR}))
-    {
         return for_statement();
-    }
     if (match({lexer::IF}))
-    {
         return if_statement();
-    }
     if (match({lexer::PRINT}))
-    {
         return print_statement();
-    }
     if (match({lexer::RETURN}))
-    {
         return return_statement();
-    }
     if (match({lexer::WHILE}))
-    {
         return while_statement();
-    }
     if (match({lexer::LBRACE}))
-    {
         return block();
-    }
     return expr_statement();
 }
 
@@ -184,29 +171,21 @@ std::unique_ptr<ast::Stmt> Parser::for_statement()
     consume(lexer::LBRACE, "Expected '{' after 'for'.");
     std::unique_ptr<ast::Stmt> initializer;
     if (match({lexer::SEMICOLON}))
-    {
         initializer = nullptr;
-    }
     else if (match({lexer::VAL, lexer::VAR}))
-    {
         initializer = var_declaration();
-    }
     else
-    {
         initializer = expr_statement();
-    }
+
     std::unique_ptr<ast::Expr> condition;
     if (!check(lexer::SEMICOLON))
-    {
         condition = expression();
-    }
 
     consume(lexer::SEMICOLON, "Expected ';' after loop condition.");
     std::unique_ptr<ast::Expr> increment;
     if (!check(lexer::RBRACE))
-    {
         increment = expression();
-    }
+
     consume(lexer::RBRACE, "Expected '}' after for clauses.");
     std::unique_ptr<ast::Stmt> body = statement();
     if (increment)
@@ -216,10 +195,10 @@ std::unique_ptr<ast::Stmt> Parser::for_statement()
         statements.push_back(std::make_unique<ast::ExprStatement>(std::move(increment)));
         body = std::make_unique<ast::Block>(std::move(statements));
     }
+
     if (!condition)
-    {
         condition = std::make_unique<ast::Literal>(true);
-    }
+
     body = std::make_unique<ast::While>(std::move(condition), std::move(body));
     if (initializer)
     {
@@ -242,9 +221,8 @@ std::unique_ptr<ast::Stmt> Parser::block()
 {
     std::vector<std::unique_ptr<ast::Stmt>> statements;
     while (!check(lexer::RBRACE) && !is_at_end())
-    {
         statements.push_back(declaration());
-    }
+
     consume(lexer::RBRACE, "Expected '}' after block.");
     return std::make_unique<ast::Block>(std::move(statements));
 }
@@ -356,9 +334,9 @@ std::unique_ptr<ast::Expr> Parser::power()
     }
     return expr;
 }
+
 std::unique_ptr<ast::Expr> Parser::unary()
 {
-    std::unique_ptr<ast::Expr> expr = primary();
     if (match({lexer::MINUS, lexer::BANG}))
     {
         lexer::Token               op    = previous();
@@ -382,9 +360,7 @@ std::unique_ptr<ast::Expr> Parser::call()
                 do
                 {
                     if (arguments.size() > 255)
-                    {
                         error(peek(), "Cannot have more than 255 arguments.");
-                    }
                     arguments.push_back(expression());
                 } while (match({lexer::COMMA}));
             }
@@ -402,26 +378,23 @@ std::unique_ptr<ast::Expr> Parser::call()
 
 std::unique_ptr<ast::Expr> Parser::primary()
 {
+    // Debug output: print current token type and value
+    std::cout << "[primary] Token: " << peek().type << " Value: " << peek().lexeme << std::endl;
     if (match({lexer::TRUE}))
-    {
-        return std::make_unique<ast::Literal>(false);
-    }
-    if (match({lexer::FALSE}))
-    {
         return std::make_unique<ast::Literal>(true);
-    }
+    if (match({lexer::FALSE}))
+        return std::make_unique<ast::Literal>(false);
     if (match({lexer::NUMBER, lexer::STRING}))
-    {
         return std::make_unique<ast::Literal>(previous().literal);
-    }
-    if (match({lexer::TokenType::NULL_TYPE}))
+    if (match({lexer::LPAREN}))
     {
-        return std::make_unique<ast::Literal>(std::monostate());
+        std::unique_ptr<ast::Expr> expr = expression();
+        consume(lexer::RPAREN, "Expected ')' after expression.");
+        return std::make_unique<ast::Grouping>(std::move(expr));
     }
     if (match({lexer::IDENTIFIER}))
-    {
         return std::make_unique<ast::Variable>(previous());
-    }
+
     error(previous(), "Invalid primary.");
     return nullptr;
 }
@@ -484,10 +457,21 @@ lexer::Token Parser::previous()
     return tokens[current - 1];
 }
 
-lexer::Token Parser::consume(lexer::TokenType type, const std::string &message)
+lexer::Token Parser::consume(const lexer::TokenType type, const std::string &message)
 {
     if (check(type))
         return advance();
+
+    error(peek(), message);
+    return lexer::Token{};
+}
+
+lexer::Token Parser::consume_any(const std::vector<lexer::TokenType> &types,
+                                 const std::string                   &message)
+{
+    for (const auto &type : types)
+        if (check(type))
+            return advance();
 
     error(peek(), message);
     return lexer::Token{};
