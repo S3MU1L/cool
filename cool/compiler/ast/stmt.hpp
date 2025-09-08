@@ -1,7 +1,8 @@
 #pragma once
+
 #include <utility>
 
-#include "Expr.hpp"
+#include "expr.hpp"
 
 namespace cool::compiler::ast {
 struct Stmt
@@ -38,9 +39,6 @@ struct While final : Stmt
     std::unique_ptr<Stmt> body;
     While(std::unique_ptr<Expr> condition, std::unique_ptr<Stmt> body);
 };
-
-struct For final : Stmt
-{};
 
 struct Return final : Stmt
 {

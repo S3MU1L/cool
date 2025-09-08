@@ -3,8 +3,8 @@
 #include <memory>
 #include <vector>
 
-#include "../ast/Expr.hpp"
-#include "../ast/Stmt.hpp"
+#include "../ast/expr.hpp"
+#include "../ast/stmt.hpp"
 #include "../lexer/token.hpp"
 
 #include <stdexcept>
@@ -14,11 +14,6 @@ struct Parser
 {
     std::vector<lexer::Token> tokens;
     int                       current = 0;
-
-    static struct ParseError : std::runtime_error
-    {
-        using std::runtime_error::runtime_error;
-    };
 
     explicit Parser(std::vector<lexer::Token> tokens);
     std::vector<std::unique_ptr<ast::Stmt>> parse();
@@ -49,12 +44,12 @@ struct Parser
     bool                                    match(const std::vector<lexer::TokenType> &types);
     bool                                    check(lexer::TokenType type);
     [[nodiscard]] bool                      check_next(lexer::TokenType token) const;
-    static void                             error(const lexer::Token &token, const std::string &message);
-    lexer::Token                            advance();
-    [[nodiscard]] bool                      is_at_end() const;
-    lexer::Token                            peek();
-    lexer::Token                            previous();
-    lexer::Token consume(lexer::TokenType type, const std::string &message);
-    void         synchronize();
+    static void        error(const lexer::Token &token, const std::string &message);
+    lexer::Token       advance();
+    [[nodiscard]] bool is_at_end() const;
+    lexer::Token       peek();
+    lexer::Token       previous();
+    lexer::Token       consume(lexer::TokenType type, const std::string &message);
+    void               synchronize();
 };
 } // namespace cool::compiler::parser

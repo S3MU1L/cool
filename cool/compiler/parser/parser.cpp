@@ -1,6 +1,7 @@
 #include "parser.hpp"
 
 #include "../compiler.hpp"
+#include "parse_error.hpp"
 
 #include <algorithm>
 #include <stdexcept>

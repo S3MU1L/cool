@@ -1,4 +1,4 @@
-#include "Expr.hpp"
+#include "expr.hpp"
 #include <utility>
 
 namespace cool::compiler::ast {
@@ -24,7 +24,8 @@ Assignment::Assignment(lexer::Token name, std::unique_ptr<Expr> value)
     : name{std::move(name)}, value{std::move(value)}
 {}
 
-Call::Call(std::unique_ptr<Expr> callee, lexer::Token paren, std::vector<std::unique_ptr<Expr>> arguments)
+Call::Call(std::unique_ptr<Expr> callee, lexer::Token paren,
+           std::vector<std::unique_ptr<Expr>> arguments)
     : callee{std::move(callee)}, paren{std::move(paren)}, arguments{std::move(arguments)}
 {}
 } // namespace cool::compiler::ast
