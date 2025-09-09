@@ -9,7 +9,11 @@ add_executable(coolc main.cpp
         parser/parser.cpp
         ast/expr.cpp
         ast/stmt.cpp
-        ast/ast_printer.hpp
         parser/parse_error.hpp
+        analysis/scope.hpp
+        analysis/type.hpp
+        analysis/scope.cpp
+        analysis/type.cpp
+        ast/ast_printer.hpp
         ast/ast_printer.cpp
 )

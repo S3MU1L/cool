@@ -1,9 +1,8 @@
 #include "compiler.hpp"
 
+#include "ast/ast_printer.hpp"
 #include "lexer/lexer.hpp"
 #include "parser/parser.hpp"
-
-#include "ast/ast_printer.hpp"
 
 #include <filesystem>
 #include <fstream>
