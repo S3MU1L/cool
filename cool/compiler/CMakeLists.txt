@@ -17,4 +17,5 @@ add_executable(coolc main.cpp
         ast/ast_printer.hpp
         ast/ast_printer.cpp
         analysis/semantic_analyzer.hpp
+        analysis/symbol_table.hpp
 )
